@@ -17,7 +17,7 @@ GAME RULES: THE PIG GAME
 
 var scores, roundScores, activePlayer, gamePlaying, player1, player2, six, winningScore, rolledOne0, rolledOne1;
 
-showRules();
+//showRules();
 init();
 //pickNames();
 
@@ -82,24 +82,26 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
 
   if (gamePlaying) {
     // 1. Random #
-    var dice = Math.floor(Math.random() * 6) + 1;
+    var die1 = Math.floor(Math.random() * 6) + 1;
+    var die2 = Math.floor(Math.random() * 6) + 1;
 
     // 2. Display the result
-    var diceDOM = document.querySelector('.dice');
-    diceDOM.style.display = 'block';
-    diceDOM.src = 'dice-' + dice + '.png';
+    document.querySelector('.die1').style.display = 'block';
+    document.querySelector('.die1').src = 'dice-' + die1 + '.png';
+    document.querySelector('.die2').style.display = 'block';
+    document.querySelector('.die2').src = 'dice-' + die2 + '.png';
 
     // 3. Update the round score IF the rolled is not a 1.
-    if (dice !== 1) {
+    if ((die1 || die2) !== 1) {
 
       // Add score :
-      roundScore += dice;
+      roundScore += (die1 + die2);
 
       // Display score :
       document.querySelector('#current-' + activePlayer).textContent = roundScore;
 
       // check six's :
-      if (dice === 6) {
+      if ((die1 || die2) === 6) {
         six++
         if (six === 2) {
           alert('You just scored two six\'s in a row!  You lose ALL your points!')
@@ -109,6 +111,8 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
           document.querySelector('#score-' + activePlayer).textContent = roundScores;
           nextPlayer();
         }
+      } else if () {
+        
       } else {
         six = 0;
       }
@@ -222,7 +226,8 @@ function init () {
 
 
   // Displays the 'roll' button and removes the 'dice' :
-  document.querySelector('.dice').style.display = 'none';
+  document.querySelector('.die1').style.display = 'none';
+  document.querySelector('.die2').style.display = 'none';
   document.querySelector('.btn-roll').style.display = 'block';
 
   // Zero's out all round and global scores on UI:
