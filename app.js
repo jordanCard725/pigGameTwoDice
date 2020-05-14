@@ -15,9 +15,9 @@ GAME RULES: THE PIG GAME
 ///// set some variables to be used :
 ////////////////////////////////////////////////////////
 
-var scores, roundScores, activePlayer, gamePlaying, player1, player2, six, winningScore, rolledOne0, rolledOne1;
+var scores, roundScores, activePlayer, gamePlaying, player1, player2, six, winningScore, rolledOne0, rolledOne1, die1, die2;
 
-//showRules();
+showRules();
 init();
 //pickNames();
 
@@ -28,13 +28,15 @@ init();
 document.querySelector('.btn-play').addEventListener('click', function () {
   document.querySelector('.rules').style.display = 'none';
 
-  // if ((player1 === '' || 'Player 1') || (player2 === '' || 'Player 2')) {
-  //   pickNames();
-  // }
-
-  if (gamePlaying === false) {
+ if (gamePlaying === false) {
     pickNames();
   }
+
+  // if ((player1 === '' || 'Player 1') || (player2 === '' || 'Player 2')) {
+  //     pickNames();
+  //   }
+
+
 })
 
 ////////////////////////////////////////////////////////////
@@ -44,17 +46,14 @@ document.querySelector('.btn-play').addEventListener('click', function () {
 document.querySelector('.btn-rules').addEventListener('click', showRules);
 
 
-////////////////////////////////////////////////////////////
+
 ///// SHOW RULES :
-////////////////////////////////////////////////////////
 function showRules () {
   document.querySelector('.rules').style.display = 'block';
 }
 
-////////////////////////////////////////////////////////////////////
-///// Allows player 1 & 2 to pick a name :
-////////////////////////////////////////////////////////
 
+///// Allows player 1 & 2 to pick a name :
 function pickNames () {
   player1 = prompt('Please enter player one\'s name!');
   document.querySelector('#name-0').textContent = player1;
@@ -82,48 +81,46 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
 
   if (gamePlaying) {
     // 1. Random #
-    var die1 = Math.floor(Math.random() * 6) + 1;
-    var die2 = Math.floor(Math.random() * 6) + 1;
+    die1 = Math.floor(Math.random() * 6) + 1;
+    die2 = Math.floor(Math.random() * 6) + 1;
 
-    // 2. Display the result
+    // 2. Display the result on UI :
     document.querySelector('.die1').style.display = 'block';
     document.querySelector('.die1').src = 'dice-' + die1 + '.png';
     document.querySelector('.die2').style.display = 'block';
     document.querySelector('.die2').src = 'dice-' + die2 + '.png';
 
     // 3. Update the round score IF the rolled is not a 1.
-    if ((die1 || die2) !== 1) {
-
+    if ((die1 === 1) || (die2 === 1)) {
+      document.querySelector('.rolled-one-' + activePlayer).style.display = 'block';
+      nextPlayer();
+    } else {
       // Add score :
       roundScore += (die1 + die2);
 
       // Display score :
       document.querySelector('#current-' + activePlayer).textContent = roundScore;
-
-      // check six's :
-      if ((die1 || die2) === 6) {
-        six++
-        if (six === 2) {
-          alert('You just scored two six\'s in a row!  You lose ALL your points!')
-          roundScores = 0;
-          scores[activePlayer] = 0;
-          document.getElementById('current-' + activePlayer).textContent = '0';
-          document.querySelector('#score-' + activePlayer).textContent = roundScores;
-          nextPlayer();
-        }
-      } else if () {
-        
-      } else {
-        six = 0;
+      if ((die1 && die2) === 6) {
+        alert('You just rolled double six\'s!  You lose ALL your points!');
+        doubleSix();
       }
-
-    } else {
-      // Next Player : (using ternary operator)
-      document.querySelector('.rolled-one-' + activePlayer).style.display = 'block';
-      nextPlayer();
     }
   }
-});
+})
+
+
+////// When player rolls double 6's
+function doubleSix () {
+  document.querySelector('.die1').style.display = 'block';
+  document.querySelector('.die1').src = 'dice-6.png';
+  document.querySelector('.die2').style.display = 'block';
+  document.querySelector('.die2').src = 'dice-6.png';
+  roundScores = 0;
+  scores[activePlayer] = 0;
+  document.getElementById('current-' + activePlayer).textContent = '0';
+  document.querySelector('#score-' + activePlayer).textContent = roundScores;
+  nextPlayer();
+}
 
 ////////////////////////////////////////////////////////
 ////// 'HOLD' BUTTON : Event Listener -
@@ -145,7 +142,9 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
       document.querySelector('#name-' + activePlayer).textContent = 'WINNER!';
 
       // removes dice from UI
-      document.querySelector('.dice').style.display = 'none';
+      document.querySelector('.die1').style.display = 'none';
+      document.querySelector('.die2').style.display = 'none';
+
 
       // changes CSS rules for the winner
       document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
@@ -166,19 +165,20 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
 
 
 ///////////////////////////////////////////////////////////
-// Event Listener for 'New Game' button :
+///// 'NEW GAME' BUTTON
+///////////////////////////////////////////////////////////
+//Event listener:
 
 document.querySelector('.btn-new').addEventListener('click', init);
 
-///////////////////////////////////////////////////////////
-///// nextPlayer function :
 
+
+///// nextPlayer function :
 function nextPlayer () {
 
   // nextPlayer : (using ternary operator)
   activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
   roundScore = 0;
-
 
   // Reset roundscore to 0 on browser
   document.getElementById('current-0').textContent = '0';
@@ -190,13 +190,12 @@ function nextPlayer () {
 
   // Clear the dice so that next player has clean screen :
   //document.querySelector('.dice').style.display = 'none';
-
   six = 0;
 }
 
-/////////////////////////////////////////////////////////////
-///// Init function (used on refresh and 'new game' button):
 
+
+///// Init function (used on refresh and 'new game' button):
 function init () {
 
   scores = [0, 0];
@@ -212,8 +211,12 @@ function init () {
   //   pickNames();
   // }
 
+
   document.querySelector('#submit').addEventListener('click', function () {
+
     winningScore = document.querySelector('#winning-score').value;
+
+
   })
 
   //Set Player 1 & 2 back instead of saying 'winner' / but we've added code that they can choose player names instead :
@@ -245,12 +248,11 @@ function init () {
 
   // Removes class rolled-one-# from UI
   removeRolledOne();
-
 };
 
 
-/////////////////////////////////////////////////////////////
-// Remove the text that says you rolled a one :
+
+///// Remove the text that says you rolled a one :
 
 function removeRolledOne () {
     rollOne0 = document.querySelector('.rolled-one-0').style.display = 'none';
